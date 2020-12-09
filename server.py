@@ -18,6 +18,11 @@ def message_received(client, server, message):
 
     if "source" in msg:
         client["source"] = msg["source"]
+        if (msg["source"]=="js"):
+            for x in server.clients:
+                print(x)
+                if "source" in x and x["source"] == "octoprint":
+                    server.send_message(x, message)
         # print(client["source"])
 
     if "origin" in msg:
@@ -69,9 +74,9 @@ def tkp():
 server_thread = threading.Thread(target=server)
 server_thread.start()
 
-tk_thread = threading.Thread(target=tkp)
-tk_thread.daemon = True
-tk_thread.start()
+# tk_thread = threading.Thread(target=tkp)
+# tk_thread.daemon = True
+# tk_thread.start()
 
 
 

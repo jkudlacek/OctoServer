@@ -1,13 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <script type="text/javascript" src="test.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-</head>
-<body>
-    <h1>Hellooo mister</h1>
-    <p id="state"></p>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Title</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script type="text/javascript" src="test.js"></script>
+        <script defer src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    </head>
+    <body>
+<!--        <h1>Hellooo mister</h1>-->
+        <div class="container">
+            <div class="columns">
+                <div class="column is-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <p class="card-header-title">Connection</p>
+                        </div>
+                        <div class="card-content">
+                            <p>Serial port</p>
+                            <div class="select mt-1 mb-4 is-fullwidth">
+                                <select>
+                                    <option>AUTO</option>
+                                </select>
+                            </div>
+                            <p>Baudrate</p>
+                            <div class="select mt-1 mb-4 is-fullwidth">
+                                <select>
+                                    <option>AUTO</option>
+                                </select>
+                            </div>
+                            <p>Printer Profile</p>
+                            <div class="select mt-1 is-fullwidth">
+                                <select>
+                                    <option>AUTO</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button class="button is-light card-footer-item">Connect</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <p class="card-header-title">State</p>
+                        </div>
+                        <div class="card-content">
+                            <p>State: <b><span id="state"></span></b></p>
+                            <hr>
+                            <p>File:</p>
+                            <p>Uploaded:</p>
+                            <p>Approx. Total Print Time:</p>
+                            <hr>
+                            <p>Print Time:</p>
+                            <p>Print Time Left:</p>
+                            <p>Printed:</p>
+                            <progress class="progress is-info" id="print-progress" max="100"></progress>
+                        </div>
+                        <div class="card-footer">
+                            <button class="button is-info card-footer-item">
+                                <span class="icon"><i class="fas fa-print"></i></span>
+                                <span>Print</span>
+                            </button>
+                            <button class="button is-light card-footer-item">Pause</button>
+                            <button class="button is-light card-footer-item">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <p class="card-header-title">Files</p>
+                        </div>
+                        <div class="card-content" id="files">
+                            <p>Serial port</p>
+                            <div class="select mt-1 mb-4 is-fullwidth">
+                                <select>
+                                    <option>AUTO</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button class="button is-info card-footer-item">Upload</button>
+                        </div>
+                    </div>
+                </div>
+<!--                <div class="column">-->
+<!--                    <nav class="panel">-->
+<!--                        <p class="panel-heading">Connection</p>-->
+<!--                        <div class="panel-block">-->
+<!--                            <p>Serial portSerial port</p>-->
+<!--                            <br>-->
+<!--                            <p>Serial portSerial port</p>-->
+<!--                            <div class="select">-->
+<!--                                <select>-->
+<!--                                    <option>AUTO</option>-->
+<!--                                </select>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="panel-block">-->
+<!--                            <div class="field is-grouped">-->
+<!--                              <p class="control">-->
+<!--                                <button class="button is-link">-->
+<!--                                  Save changes-->
+<!--                                </button>-->
+<!--                              </p>-->
+<!--                              <p class="control">-->
+<!--                                <button class="button">-->
+<!--                                  Cancel-->
+<!--                                </button>-->
+<!--                              </p>-->
+<!--                              <p class="control">-->
+<!--                                <button class="button is-danger">-->
+<!--                                  Delete post-->
+<!--                                </button>-->
+<!--                              </p>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </nav>-->
+<!--                </div>-->
+            </div>
+        </div>
+    </body>
 </html>
