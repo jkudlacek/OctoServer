@@ -12,8 +12,12 @@ socket.onopen = function(e) {
 };
 
 socket.onmessage = function(event) {
-  // console.log(`[message] Data received from server: ${event.data}`);
-  // console.log(typeof event.data)
+  var blbost = '<div class="field has-addons"><p class="control"><button class="button is-small">\n' +
+      '    <span class="icon is-small">\n' +
+      '      <i class="fas fa-print"></i>\n' +
+      '    </span>\n' +
+      '  </button></p></div>'
+
   var obj = JSON.parse(event.data);
   console.log(obj);
   // console.log(obj)
@@ -29,7 +33,7 @@ socket.onmessage = function(event) {
   };
   if ("local" in obj){
     $.each(obj.local, function(key, value){
-      $("#files").append("<p>" + key + "</p><hr>");
+      $("#files").append("<p>" + key + "</p>" + blbost + "<hr>");
     });
     console.log(obj.local);
   }
