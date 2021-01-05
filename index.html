@@ -7,6 +7,12 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script type="text/javascript" src="test.js"></script>
         <script defer src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"></script>
+        <script type="text/javascript">
+
+
+
+
+        </script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
     </head>
     <body>
@@ -51,22 +57,27 @@
                         <div class="card-content">
                             <p>State: <b><span id="state"></span></b></p>
                             <hr>
-                            <p>File:</p>
-                            <p>Uploaded:</p>
-                            <p>Approx. Total Print Time:</p>
+                            <p>File: <span id="file"></span></p>
+                            <p>Uploaded: <span id="uploaded"></span></p>
+                            <p>Approx. Total Print Time: <span id="circa"></span></p>
                             <hr>
-                            <p>Print Time:</p>
-                            <p>Print Time Left:</p>
-                            <p>Printed:</p>
+                            <p>Print Time: <span id="print_time"></span></p>
+                            <p>Print Time Left: <span id="time_left"></span></p>
                             <progress class="progress is-info" id="print-progress" max="100"></progress>
                         </div>
                         <div class="card-footer">
-                            <button class="button is-info card-footer-item">
+                            <button class="button is-info card-footer-item" id="print">
                                 <span class="icon"><i class="fas fa-print"></i></span>
                                 <span>Print</span>
                             </button>
-                            <button class="button is-light card-footer-item">Pause</button>
-                            <button class="button is-light card-footer-item">Cancel</button>
+                            <button class="button is-light card-footer-item" id="print_toggle">
+                                <span class="icon"><i class="fas fa-pause"></i></span>
+                                <span>Pause</span>
+                            </button>
+                            <button class="button is-light card-footer-item" id="cancel">
+                                <span class="icon"><i class="fas fa-stop"></i></span>
+                                <span>Cancel</span>
+                            </button>
                         </div>
                     </div>
                 </div>
