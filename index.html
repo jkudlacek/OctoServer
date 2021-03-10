@@ -1,133 +1,301 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Title</title>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script type="text/javascript" src="test.js"></script>
-        <script defer src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"></script>
-        <script type="text/javascript">
-
-
-
-
-        </script>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
-    </head>
-    <body>
-<!--        <h1>Hellooo mister</h1>-->
-        <div class="container">
-            <div class="columns">
-                <div class="column is-3">
-                    <div class="card">
-                        <div class="card-header">
-                            <p class="card-header-title">Connection</p>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="test.js"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/min/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@1.8.0"></script>
+    <script type="text/javascript" src="chart.js"></script>
+</head>
+<body>
+<nav class="navbar is-spaced has-background-link has-shadow" role="navigation" aria-label="main navigation">
+    <a class="navbar-item is-static">
+        <h1 class="title is-4 has-text-white">3D printer Monitoring</h1>
+    </a>
+    </div>
+</nav>
+<progress class="progress is-radiusless is-info mt-0" value="0" max="100" id="loading"></progress>
+<div class="container mt-5">
+    <div class="columns is-multiline">
+        <div class="column is-4">
+            <div class="card" id="connection">
+                <div class="card-header">
+                    <p class="card-header-title">Connection</p>
+                    <a class="card-header-icon" id="hide" aria-label="more options">
+                        <span class="icon">
+                            <i class="fas fa-angle-down" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </div>
+                <div class="card-content">
+                    <p>Serial port</p>
+                    <div class="control">
+                        <div class="select mt-1 mb-4 is-fullwidth">
+                            <select id="serial">
+                                <option>AUTO</option>
+                            </select>
                         </div>
-                        <div class="card-content">
-                            <p>Serial port</p>
-                            <div class="select mt-1 mb-4 is-fullwidth">
-                                <select>
-                                    <option>AUTO</option>
-                                </select>
-                            </div>
-                            <p>Baudrate</p>
-                            <div class="select mt-1 mb-4 is-fullwidth">
-                                <select>
-                                    <option>AUTO</option>
-                                </select>
-                            </div>
-                            <p>Printer Profile</p>
-                            <div class="select mt-1 is-fullwidth">
-                                <select>
-                                    <option>AUTO</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <button class="button is-light card-footer-item">Connect</button>
+                    </div>
+                    <p>Baudrate</p>
+                    <div class="control">
+                        <div class="select mt-1 mb-4 is-fullwidth">
+                            <select id="baudrate">
+                                <option>AUTO</option>
+                            </select>
                         </div>
                     </div>
                 </div>
-                <div class="column is-3">
-                    <div class="card">
-                        <div class="card-header">
-                            <p class="card-header-title">State</p>
-                        </div>
-                        <div class="card-content">
-                            <p>State: <b><span id="state"></span></b></p>
-                            <hr>
-                            <p>File: <span id="file"></span></p>
-                            <p>Uploaded: <span id="uploaded"></span></p>
-                            <p>Approx. Total Print Time: <span id="circa"></span></p>
-                            <hr>
-                            <p>Print Time: <span id="print_time"></span></p>
-                            <p>Print Time Left: <span id="time_left"></span></p>
-                            <progress class="progress is-info" id="print-progress" max="100"></progress>
-                        </div>
-                        <div class="card-footer">
-                            <button class="button is-info card-footer-item" id="print">
-                                <span class="icon"><i class="fas fa-print"></i></span>
-                                <span>Print</span>
-                            </button>
-                            <button class="button is-light card-footer-item" id="print_toggle">
-                                <span class="icon"><i class="fas fa-pause"></i></span>
-                                <span>Pause</span>
-                            </button>
-                            <button class="button is-light card-footer-item" id="cancel">
-                                <span class="icon"><i class="fas fa-stop"></i></span>
-                                <span>Cancel</span>
-                            </button>
-                        </div>
-                    </div>
+                <div class="card-footer">
+                    <button class="button is-light card-footer-item" id="connect">Connect</button>
                 </div>
-                <div class="column is-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <p class="card-header-title">Files</p>
-                        </div>
-                        <div class="card-content" id="files">
-                        </div>
-                        <div class="card-footer">
-                            <button class="button is-info card-footer-item">Upload</button>
-                        </div>
-                    </div>
+            </div>
+            <div class="card my-5">
+                <div class="card-header">
+                    <p class="card-header-title">State</p>
                 </div>
-<!--                <div class="column">-->
-<!--                    <nav class="panel">-->
-<!--                        <p class="panel-heading">Connection</p>-->
-<!--                        <div class="panel-block">-->
-<!--                            <p>Serial portSerial port</p>-->
-<!--                            <br>-->
-<!--                            <p>Serial portSerial port</p>-->
-<!--                            <div class="select">-->
-<!--                                <select>-->
-<!--                                    <option>AUTO</option>-->
-<!--                                </select>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="panel-block">-->
-<!--                            <div class="field is-grouped">-->
-<!--                              <p class="control">-->
-<!--                                <button class="button is-link">-->
-<!--                                  Save changes-->
-<!--                                </button>-->
-<!--                              </p>-->
-<!--                              <p class="control">-->
-<!--                                <button class="button">-->
-<!--                                  Cancel-->
-<!--                                </button>-->
-<!--                              </p>-->
-<!--                              <p class="control">-->
-<!--                                <button class="button is-danger">-->
-<!--                                  Delete post-->
-<!--                                </button>-->
-<!--                              </p>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </nav>-->
-<!--                </div>-->
+                <div class="card-content">
+                    <p>State: <b><span id="state"></span></b></p>
+                    <hr>
+                    <p>File: <span id="file"></span></p>
+                    <p>Uploaded: <span id="uploaded"></span></p>
+                    <p>Approx. Total Print Time: <span id="circa"></span></p>
+                    <hr>
+                    <p>Print Time: <span id="print_time"></span></p>
+                    <p>Print Time Left: <span id="time_left"></span></p>
+                    <progress class="progress is-info" id="print-progress" max="100"></progress>
+                </div>
+                <div class="card-footer">
+                    <button class="button is-info card-footer-item" id="print">
+                        <span class="icon"><i class="fas fa-print"></i></span>
+                        <span>Print</span>
+                    </button>
+                    <button class="button is-light card-footer-item" id="print_toggle">
+                        <span class="icon"><i class="fas fa-pause"></i></span>
+                        <span>Pause</span>
+                    </button>
+                    <button class="button is-light card-footer-item" id="cancel">
+                        <span class="icon"><i class="fas fa-stop"></i></span>
+                        <span>Cancel</span>
+                    </button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <p class="card-header-title">Files</p>
+                    <a class="card-header-icon" id="file_load" aria-label="more options">
+                        <span class="icon">
+                            <i class="fas fa-sync"></i>
+                        </span>
+                    </a>
+                </div>
+                <div class="card-content" id="files">
+                </div>
             </div>
         </div>
-    </body>
+        <div class="column is-8">
+            <div class="card">
+                <div class="card-header">
+                    <p class="card-header-title">Control</p>
+                </div>
+                <div class="card-content">
+                    <canvas id="temps"></canvas>
+                </div>
+                <div class="card-content">
+                    <div class="columns is-vcentered is-mobile is-multiline">
+                        <div class="column is-12">
+                            <div class="columns is-mobile">
+                                <div class="column is-3 has-text-centered">
+                                    <p>X/Y</p>
+                                </div>
+                                <div class="column is-1 has-text-centered">
+                                    <p>Z</p>
+                                </div>
+                                <div class="column is-1"></div>
+                                <div class="column is-2 mr-5">
+                                    <p>Tool</p>
+                                </div>
+                                <div class="column is-2">
+                                    <p>Bed</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column is-1 pr-0">
+                            <button class="button is-pulled-right">
+                                <span class="icon">
+                                    <i class="fas fa-arrow-left"></i>
+                                </span>
+                            </button>
+                        </div>
+                        <div class="column is-1 px-0 has-text-centered">
+                            <button class="button">
+                                <span class="icon">
+                                    <i class="fas fa-arrow-up"></i>
+                                </span>
+                            </button>
+                            <button class="button my-4">
+                                <span class="icon">
+                                    <i class="fas fa-home"></i>
+                                </span>
+                            </button>
+                            <button class="button">
+                                <span class="icon">
+                                    <i class="fas fa-arrow-down"></i>
+                                </span>
+                            </button>
+                        </div>
+                        <div class="column is-1 pl-0">
+                            <button class="button">
+                                <span class="icon">
+                                    <i class="fas fa-arrow-right"></i>
+                                </span>
+                            </button>
+                        </div>
+                        <div class="column is-1 px-0 has-text-centered">
+                            <button class="button">
+                                <span class="icon">
+                                    <i class="fas fa-arrow-up"></i>
+                                </span>
+                            </button>
+                            <button class="button my-4">
+                                <span class="icon">
+                                    <i class="fas fa-home"></i>
+                                </span>
+                            </button>
+                            <button class="button">
+                                <span class="icon">
+                                    <i class="fas fa-arrow-down"></i>
+                                </span>
+                            </button>
+                        </div>
+                        <div class="column is-1"></div>
+                        <div class="column is-2 mr-5">
+                            <p class="is-size-1" id="tool">- -</p>
+                            <p class="">Target: </p>
+
+                            <div class="field has-addons mt-2">
+                                <p class="control has-icons-right">
+                                    <input class="input is-small" type="number" name="tool_target">
+                                    <span class="icon is-small is-right"> °C</span>
+                                </p>
+                                <p class="control">
+                                    <button class="button is-link is-small">
+                                        <span class="icon">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    </button>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="column is-2">
+                            <p class="is-size-1" id="bed">- -</p>
+                            <p class="">Target: </p>
+
+                            <div class="field has-addons mt-2">
+                                <p class="control has-icons-right">
+                                    <input class="input is-small" type="number" name="bed_target">
+                                    <span class="icon is-small is-right"> °C</span>
+                                </p>
+                                <p class="control">
+                                    <a class="button is-link is-small">
+                                        <span class="icon">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="plan_menu">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <div class="card">
+                <div class="card-header">
+                    <p class="card-header-title">Print Planner</p>
+                </div>
+                <div class="card-content">
+                    <p class="title is-5" id="filename"></p>
+
+                    <div class="field is-grouped">
+                        <div class="columns">
+                            <div class="column">
+                                <label class="label">Day:</label>
+                                <div class="control">
+                                    <div class="select" id="day">
+                                        <select>
+                                            <option value="0">Today</option>
+                                            <option value="1">Tomorrow</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <label class="label">Hours:</label>
+                                <div class="control">
+                                    <input class="input " type="number" min="0" max="23" id="hours">
+                                </div>
+                            </div>
+                            <div class="column">
+                                <label class="label">Minutes:</label>
+                                <div class="control">
+                                    <input class="input " type="number" min="0" max="59" id="minutes">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="field">
+                        <label class="checkbox">
+                            <input type="checkbox" id="conn_opts">
+                            Customize connection options
+                        </label>
+                    </div>
+
+                    <div class="field is-grouped is-hidden" id="conn_dropdown">
+                        <div class="columns">
+                            <div class="column">
+                                <label class="label">Serial port:</label>
+                                <div class="control">
+                                    <div class="select">
+                                        <select id="delay_serial">
+                                            <option>AUTO</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <label class="label">Baudrate:</label>
+                                <div class="control">
+                                    <div class="select">
+                                        <select id="delay_baudrate">
+                                            <option>AUTO</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button class="button is-link" id="submit">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="modal-close is-large" aria-label="close"></button>
+    </div>
+</div>
+</body>
 </html>

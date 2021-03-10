@@ -1,6 +1,5 @@
 import logging
 from websocket_server import WebsocketServer
-from tkinter import *
 import threading
 import json
 
