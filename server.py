@@ -20,6 +20,16 @@ def message_received(client, server, message):
     else:
         print("No specified origin")
 
+# Pošle zprávu na Octoprint, že se klient odpojil
+def client_left(client, server):
+    if client["source"]=="js":
+        message= {"left" : True}
+        message=json.dumps(message)
+        for x in server.clients:
+            # hledání správného příjemce
+            if x["source"] == "octoprint":
+                server.send_message(x, message)
+
 
 # Funkce websocket server
 def server():
@@ -29,6 +39,8 @@ def server():
     server = WebsocketServer(8765, host='127.0.0.1')
     # Specifikace funkce pro přijetí nové zprávy
     server.set_fn_message_received(message_received)
+    # Když se odpojí klient, bude zavolána tato funkce
+    server.set_fn_client_left(client_left)
     server.run_forever()
 
 # Přeposlání zprávy druhému klientovi
