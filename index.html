@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Title</title>
+    <title>Monitoring</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="script.js"></script>
+    <script src="action.js"></script>
     <script defer src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
     <script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/min/moment.min.js"></script>
@@ -14,9 +15,13 @@
 </head>
 <body>
 <nav class="navbar is-spaced has-background-link has-shadow" aria-label="main navigation">
-    <a class="navbar-item is-static">
-        <h1 class="title is-4 has-text-white">3D printer Monitoring</h1>
-    </a>
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item">
+                <h1 class="title is-4 has-text-white">3D printer Monitoring</h1>
+            </a>
+        </div>
+    </div>
 </nav>
 <progress class="progress is-radiusless is-info mt-0" max="100" id="loading"></progress>
 <div class="container mt-5">

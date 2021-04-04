@@ -1,13 +1,17 @@
+// Spojení se serverem
 let socket = new WebSocket("ws://localhost:8765");
-var last;
-var buf = {};
-var received = false;
+
+//Inicializace kontrolních proměnných
+let last;
+let buf = {};
+let received = false;
 buf["tool"] = [];
 buf["bed"] = [];
 buf["tool_target"] = [];
 buf["bed_target"] = [];
 
-var config = {
+// Konfigurační konstanta obsahující vlastnosti grafu
+const config = {
     type: 'line',
     data: {
         datasets: [{
@@ -72,8 +76,8 @@ var config = {
 };
 
 //Pošle zprávu při navázaní spojení
-socket.onopen = function (e) {
-    var msg = {
+socket.onopen = function () {
+    const msg = {
         source: "js"
     };
     socket.send(JSON.stringify(msg))
@@ -89,53 +93,63 @@ socket.onclose = function (event) {
 };
 
 //Reakce na chybu ve spojení websocketu
-socket.onerror = function (error) {
+socket.onerror = function () {
     console.log("Error in connection");
 };
 
 //Funkce, která se vyvolá při přijetí zprávy ze serveru
 socket.onmessage = function (event) {
-
-    var obj = JSON.parse(event.data);
+    //Načtení zprávy do objektu
+    let obj = JSON.parse(event.data);
+    //Důkaz o přijetí zprávy
     received = true;
+
+    //Reakce na přijatou zprávu obsahující informace k připojení
     if ("ports" in obj) {
+        //Vyprázdnění hodnot
         $("#serial").empty();
         $("#baudrate").empty();
         $("#delay_serial").empty();
         $("#delay_baudrate").empty();
 
+        //Jestli je nastavená preference portu, zvolí se jako první možnost, pokud ne, první možnost bude automatické zjištění
         if (obj.portPreference) {
-            $("#serial, #delay_serial").append('<option>' + obj.portPreference + '</option>');
+            $("#serial, #delay_serial").append("<option>" + obj.portPreference + "</option>");
         } else {
-            $("#serial, #delay_serial").append('<option>AUTO</option>');
+            $("#serial, #delay_serial").append("<option>AUTO</option>");
         }
+        //Totožné s výše uvedeným, preference rychlosti přenosu dat
         if (obj.baudratePreference) {
-            $("#baudrate, #delay_baudrate").append('<option>' + obj.baudratePreference + '</option>');
+            $("#baudrate, #delay_baudrate").append("<option>" + obj.baudratePreference + "</option>");
         } else {
-            $("#baudrate, #delay_baudrate").append('<option>AUTO</option>');
+            $("#baudrate, #delay_baudrate").append("<option>AUTO</option>");
         }
 
+        //Naplnění elementu select hodnotami dostupných portů a rychlostí
         $(document).ready(function () {
             $.each(obj.ports, function (key, val) {
-                $("#serial, #delay_serial").append('<option>' + val + '</option>');
+                $("#serial, #delay_serial").append("<option>" + val + "</option>");
             });
             $.each(obj.baudrates, function (key, val) {
-                $("#baudrate, #delay_baudrate").append('<option>' + val + '</option>');
+                $("#baudrate, #delay_baudrate").append("<option>" + val + "</option>");
             });
         })
     }
-    ;
 
+    //Funkce vyvolaná pokud zpráva obsahuje aktualizaci stavu
     if ("state" in obj) {
         state = obj.state.text;
         disableButtons(state);
         $("#state").text(state);
+        //Vizuální informace o správně odeslané zprávě pomocí načítacího pruhu
         if (state == last) {
             $("#loading").attr("value", 0);
         }
         last = state;
+        //Jestli je nějaký soubor načtený
         if (obj.job.file.name != null) {
-            var date = new Date(obj.job.file.date * 1000).toLocaleDateString("en-US");
+            //Implementace informací o souboru na stránku
+            let date = new Date(obj.job.file.date * 1000).toLocaleDateString("en-US");
             $("#uploaded").text(date);
             $("#file").text(obj.job.file.name);
             $("#circa").text(getTime(obj.job.estimatedPrintTime) + "s");
@@ -145,15 +159,18 @@ socket.onmessage = function (event) {
             $("#print_progress").val(obj.progress.completion);
         }
 
-        var tool = obj.temps.tool0.actual;
-        var tool_target = obj.temps.tool0.target;
-        var bed = obj.temps.bed.actual;
-        var bed_target = obj.temps.bed.target;
-        var rnow = new Date($.now());
+        //Získání hodnot teplot z objektu
+        let tool = obj.temps.tool0.actual;
+        let tool_target = obj.temps.tool0.target;
+        let bed = obj.temps.bed.actual;
+        let bed_target = obj.temps.bed.target;
+        let rnow = new Date($.now());
 
         if (tool != 0 && bed != 0) {
+            //Zobrazení teplot v uživatelském rozhraní
             $("#tool").text(Math.round(tool * 10) / 10 + "°C");
             $("#bed").text(Math.round(bed * 10) / 10 + "°C");
+            //Vložení hodnot do bufferu
             buf["tool"].push({
                 x: rnow,
                 y: tool
@@ -171,28 +188,33 @@ socket.onmessage = function (event) {
                 y: bed_target
             });
         }
-
     }
-    ;
 
+    //Zpráva obsahuje seznam souborů
     if ("local" in obj) {
+        //vymaže předchozí seznam souborů
         $("#files").empty();
-
-        var file_list = [];
+        //pole pro uložení jmen souborů
+        let file_list = [];
         $.each(obj.local, function (key, value) {
+            //Kontrola typu položky
             if (value.type == "folder") {
+                //Pokud je položka složka, zkontroluje se její obsah
                 $.each(value.children, function (k, v) {
                     if (v.type == "machinecode") {
                         file_list.push(v.path);
                     }
                 })
+            //    Pokud je položka soubor pro tiskárnu (.gcode) přidá se do pole
             } else if (value.type == "machinecode") {
                 file_list.push(value.path);
             }
         });
+
+        //Doplní šablonu proměnnými a vloží ji do rozhraní
         $(document).ready(function () {
             $.each(file_list, function (key, value) {
-                var file_item = '<div class="field has-addons">' +
+                let file_item = '<div class="field has-addons">' +
                     ' <p class="control"><button value="' + value + '" class="button is-small file_load">\n' +
                     ' <span class="icon is-small">\n' +
                     ' <i class="fas fa-print"></i>\n' +
@@ -203,264 +225,58 @@ socket.onmessage = function (event) {
                     ' </span>\n' +
                     ' </button>' +
                     '</p></div>';
-                $("#files").append("<p class='name'>" + value + "</p>" + file_item + (key === (file_list.length - 1) ? '' : "<hr>"));
+                $("#files").append('<p class="name">' + value + "</p>" + file_item + (key === (file_list.length - 1) ? "" : "<hr>"));
             })
         })
 
     }
-    ;
-
 };
 
-$(document).ready(function () {
-    $("#loading").val(0);
-    $(".button:not(#connect)").addClass("is-static");
-    $(".input").attr("disabled", true);
-
-    $(".button").click(function () {
-        if (received) {
-            $("#loading").removeAttr("value");
-        }
-    });
-
-    $("#connect").click(function () {
-        if ($(this).text() == "Connect") {
-            var serial_port = $("#serial").val();
-            var rate = $("#baudrate").val();
-            var obj = {
-                origin: "js",
-                connect: {
-                    port: serial_port,
-                    baudrate: rate
-                }
-            };
-            socket.send(JSON.stringify(obj));
-        } else {
-            var obj = {
-                origin: "js",
-                disconnect: "disconnect"
-            }
-            socket.send(JSON.stringify(obj));
-        }
-
-        $("#connection > .card-content, #connection > .card-footer").toggleClass("is-hidden");
-
-    });
-
-    $("#hide").click(function () {
-        $("#connection > .card-content, #connection > .card-footer").toggleClass("is-hidden");
-    })
-
-    $("#files").on("click", ".file_load", function () {
-        var filename = $(this).val();
-
-        var obj = {
-            origin: "js",
-            job: filename
-        };
-        socket.send(JSON.stringify(obj))
-    });
-
-    $("#files").on("click", ".file_delay", function () {
-        $("#plan_menu").addClass("is-active");
-        $("#filename").text($(this).val());
-
-        var d = new Date();
-
-        var h = d.getHours();
-        var hours = $("#hours").val(h);
-
-        var m = d.getMinutes();
-        var hours = $("#minutes").val(m);
-    });
-
-    $("#conn_opts").change(function () {
-        if (this.checked) {
-            $("#conn_dropdown").removeClass("is-hidden");
-        } else {
-            $("#conn_dropdown").addClass("is-hidden");
-        }
-    });
-
-    $(".modal-background, .modal-close").click(function () {
-        $("#plan_menu").removeClass("is-active");
-    });
-
-    $("#submit").click(function () {
-        var d = new Date();
-        var day = $("#day").val();
-        var hours = $("#hours").val();
-        var minutes = $("#minutes").val();
-        var newDate = new Date();
-        newDate.setSeconds(0);
-
-        if (day == 1) {
-            day = d.getDate() + 1;
-        } else if (day == 0) {
-            day = d.getDate();
-        } else {
-            return;
-        }
-        newDate.setDate(day);
-
-        var h = d.getHours();
-
-        var m = d.getMinutes();
-
-        if (hours >= 0 && hours <= 23) {
-            newDate.setHours(hours)
-        } else {
-            return;
-        }
-
-        if (minutes >= 0 && minutes <= 59) {
-            newDate.setMinutes(minutes);
-        } else {
-            return;
-        }
-        var stamp = new Date(newDate).getTime();
-        var diff = stamp - d.getTime();
-        var filename = $("#filename").text();
-        var obj = {
-            origin: "js"
-        };
-        var bool = $("#conn_opts").is(":checked")
-        obj["delay"] = {
-            file: filename,
-            difference: diff,
-            serial: bool ? $("#delay_serial").val() : "",
-            baud: bool ? $("#delay_baudrate").val() : ""
-        }
-
-        socket.send(JSON.stringify(obj))
-    });
-
-
-    $("#print").click(function () {
-        var button_text = $("#print").children('span').eq(1).text();
-        if (button_text == "Print") {
-            var obj = {
-                origin: "js",
-                cmd: "print"
-            };
-
-            socket.send(JSON.stringify(obj))
-        } else if (button_text == "Restart") {
-            var obj = {
-                origin: "js",
-                cmd: "cancel"
-            };
-            socket.send(JSON.stringify(obj))
-
-            obj.cmd = "print";
-            socket.send(JSON.stringify(obj))
-        }
-
-    });
-
-    $("#cancel").click(function () {
-        var obj = {
-            origin: "js",
-            cmd: "cancel"
-        };
-
-        socket.send(JSON.stringify(obj))
-    });
-
-    $("#print_toggle").click(function () {
-        var obj = {
-            origin: "js",
-            cmd: "toggle"
-        };
-
-        socket.send(JSON.stringify(obj))
-    });
-
-    $(".jog").click(function () {
-        var obj = {
-            origin: "js",
-            jog: $(this).val()
-        };
-
-        socket.send(JSON.stringify(obj))
-    })
-
-    $(".home").click(function () {
-        var obj = {
-            origin: "js",
-            home: $(this).val()
-        };
-
-        socket.send(JSON.stringify(obj))
-    })
-
-    $("#set_tool").click(function () {
-        var obj = {
-            origin: "js",
-            tool0: $("input[name=tool_target]").val()
-        };
-
-        socket.send(JSON.stringify(obj))
-    })
-
-    $("#set_bed").click(function () {
-        var obj = {
-            origin: "js",
-            bed: $("input[name=bed_target]").val()
-        };
-
-        socket.send(JSON.stringify(obj))
-    })
-
-    $("#file_sync").click(function () {
-        var obj = {
-            origin: "js",
-            file_reload: true
-        };
-        socket.send(JSON.stringify(obj))
-    });
-
-
-});
-
+//Zobrazení grafu po načtení celé stránky
 window.onload = function () {
-    var ctx = document.getElementById('temps').getContext('2d');
+    //Specifikace elementu pro graf
+    const ctx = document.getElementById("temps").getContext("2d");
     window.myChart = new Chart(ctx, config);
 };
 
+//Aktualizace grafu
 function onRefresh(chart) {
-    var i = 0;
+    let i = 0;
+    // Každá hodnota v bufferu se načte do grafu
     $.each(buf, function (key, val) {
         if (val[0]) {
+            // Předávání hodnot do grafu
             chart.config.data.datasets[i].data.push(val[0]);
             i++;
         }
-
     })
+
+    //Vyprázdnění bufferu
     buf["tool"] = [];
     buf["tool_target"] = [];
     buf["bed"] = [];
     buf["bed_target"] = [];
 }
 
+// Převod času na lépe čitelný formát
 function getTime(seconds) {
-    var leftover = seconds;
+    let leftover = seconds;
 
-    var days = Math.floor(leftover / 86400);
-
+    const days = Math.floor(leftover / 86400);
     leftover = leftover - (days * 86400);
 
-    var hours = Math.floor(leftover / 3600);
-
+    const hours = Math.floor(leftover / 3600);
     leftover = leftover - (hours * 3600);
 
-    var minutes = Math.floor(leftover / 60);
-
+    const minutes = Math.floor(leftover / 60);
     leftover = leftover - (minutes * 60);
+
     leftover = Math.floor(leftover);
-    return ((days >= 1 ? days + ':' : '') + hours + ':' + minutes + ':' + leftover);
+    // Ze vteřin se vypočíta počet dnů, hodin a minut, výsledek slouží jako vrácená hodnota
+    return ((days >= 1 ? days + ":" : "") + hours + ":" + minutes + ":" + leftover);
 }
 
+// Změna obsahu html elementů dle daného stavu tiskárny
 function disableButtons(state) {
     if (state != "Offline") {
         $("#connect").text("Disconnect");
