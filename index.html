@@ -5,22 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Title</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script type="text/javascript" src="test.js"></script>
+    <script src="script.js"></script>
     <script defer src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
     <script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/min/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@1.8.0"></script>
-    <script type="text/javascript" src="chart.js"></script>
 </head>
 <body>
-<nav class="navbar is-spaced has-background-link has-shadow" role="navigation" aria-label="main navigation">
+<nav class="navbar is-spaced has-background-link has-shadow" aria-label="main navigation">
     <a class="navbar-item is-static">
         <h1 class="title is-4 has-text-white">3D printer Monitoring</h1>
     </a>
-    </div>
 </nav>
-<progress class="progress is-radiusless is-info mt-0" value="0" max="100" id="loading"></progress>
+<progress class="progress is-radiusless is-info mt-0" max="100" id="loading"></progress>
 <div class="container mt-5">
     <div class="columns is-multiline">
         <div class="column is-4">
@@ -33,7 +31,7 @@
                         </span>
                     </a>
                 </div>
-                <div class="card-content">
+                <div class="card-content is-hidden">
                     <p>Serial port</p>
                     <div class="control">
                         <div class="select mt-1 mb-4 is-fullwidth">
@@ -51,7 +49,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-footer">
+                <div class="card-footer is-hidden">
                     <button class="button is-light card-footer-item" id="connect">Connect</button>
                 </div>
             </div>
@@ -68,7 +66,7 @@
                     <hr>
                     <p>Print Time: <span id="print_time"></span></p>
                     <p>Print Time Left: <span id="time_left"></span></p>
-                    <progress class="progress is-info" id="print-progress" max="100"></progress>
+                    <progress class="progress is-info" id="print_progress" value="0" max="100"></progress>
                 </div>
                 <div class="card-footer">
                     <button class="button is-info card-footer-item" id="print">
@@ -88,13 +86,13 @@
             <div class="card">
                 <div class="card-header">
                     <p class="card-header-title">Files</p>
-                    <a class="card-header-icon" id="file_load" aria-label="more options">
+                    <a class="card-header-icon" id="file_sync" aria-label="more options">
                         <span class="icon">
                             <i class="fas fa-sync"></i>
                         </span>
                     </a>
                 </div>
-                <div class="card-content" id="files">
+                <div class="card-content" id="files" style="max-height:500px;overflow-y: auto;">
                 </div>
             </div>
         </div>
@@ -117,7 +115,7 @@
                                     <p>Z</p>
                                 </div>
                                 <div class="column is-1"></div>
-                                <div class="column is-2 mr-5">
+                                <div class="column is-2 mr-6">
                                     <p>Tool</p>
                                 </div>
                                 <div class="column is-2">
@@ -126,65 +124,65 @@
                             </div>
                         </div>
                         <div class="column is-1 pr-0">
-                            <button class="button is-pulled-right">
+                            <button class="button jog is-pulled-right" value="x-">
                                 <span class="icon">
                                     <i class="fas fa-arrow-left"></i>
                                 </span>
                             </button>
                         </div>
                         <div class="column is-1 px-0 has-text-centered">
-                            <button class="button">
+                            <button class="button jog" value="y+">
                                 <span class="icon">
                                     <i class="fas fa-arrow-up"></i>
                                 </span>
                             </button>
-                            <button class="button my-4">
+                            <button class="button home my-4" value="x y">
                                 <span class="icon">
                                     <i class="fas fa-home"></i>
                                 </span>
                             </button>
-                            <button class="button">
+                            <button class="button jog" value="y-">
                                 <span class="icon">
                                     <i class="fas fa-arrow-down"></i>
                                 </span>
                             </button>
                         </div>
                         <div class="column is-1 pl-0">
-                            <button class="button">
+                            <button class="button jog" value="x+">
                                 <span class="icon">
                                     <i class="fas fa-arrow-right"></i>
                                 </span>
                             </button>
                         </div>
                         <div class="column is-1 px-0 has-text-centered">
-                            <button class="button">
+                            <button class="button jog" value="z+">
                                 <span class="icon">
                                     <i class="fas fa-arrow-up"></i>
                                 </span>
                             </button>
-                            <button class="button my-4">
+                            <button class="button my-4 home" value="z">
                                 <span class="icon">
                                     <i class="fas fa-home"></i>
                                 </span>
                             </button>
-                            <button class="button">
+                            <button class="button jog" value="z-">
                                 <span class="icon">
                                     <i class="fas fa-arrow-down"></i>
                                 </span>
                             </button>
                         </div>
                         <div class="column is-1"></div>
-                        <div class="column is-2 mr-5">
+                        <div class="column is-2 mr-6">
                             <p class="is-size-1" id="tool">- -</p>
-                            <p class="">Target: </p>
+                            <p class="mt-2 is-size-5">Target: </p>
 
                             <div class="field has-addons mt-2">
                                 <p class="control has-icons-right">
-                                    <input class="input is-small" type="number" name="tool_target">
+                                    <input class="input is-small" type="number" max="300" name="tool_target">
                                     <span class="icon is-small is-right"> °C</span>
                                 </p>
                                 <p class="control">
-                                    <button class="button is-link is-small">
+                                    <button class="button is-link is-small" id="set_tool">
                                         <span class="icon">
                                             <i class="fas fa-check"></i>
                                         </span>
@@ -194,7 +192,7 @@
                         </div>
                         <div class="column is-2">
                             <p class="is-size-1" id="bed">- -</p>
-                            <p class="">Target: </p>
+                            <p class="mt-2 is-size-5">Target: </p>
 
                             <div class="field has-addons mt-2">
                                 <p class="control has-icons-right">
@@ -202,11 +200,11 @@
                                     <span class="icon is-small is-right"> °C</span>
                                 </p>
                                 <p class="control">
-                                    <a class="button is-link is-small">
+                                    <button class="button is-link is-small" id="set_bed">
                                         <span class="icon">
                                             <i class="fas fa-check"></i>
                                         </span>
-                                    </a>
+                                    </button>
                                 </p>
                             </div>
                         </div>
@@ -230,8 +228,8 @@
                             <div class="column">
                                 <label class="label">Day:</label>
                                 <div class="control">
-                                    <div class="select" id="day">
-                                        <select>
+                                    <div class="select">
+                                        <select id="day">
                                             <option value="0">Today</option>
                                             <option value="1">Tomorrow</option>
                                         </select>
