@@ -214,12 +214,12 @@ socket.onmessage = function (event) {
         //Doplní šablonu proměnnými a vloží ji do rozhraní
         $(document).ready(function () {
             $.each(file_list, function (key, value) {
-                let file_item = '<div class="field has-addons">' +
+                let file_item = '<div class="field is-grouped mt-2">' +
                     ' <p class="control"><button value="' + value + '" class="button is-small file_load">\n' +
                     ' <span class="icon is-small">\n' +
                     ' <i class="fas fa-print"></i>\n' +
                     ' </span>\n' +
-                    ' </button><button value="' + value + '" class="button is-small file_delay">\n' +
+                    ' </button></p><p class="control"><button value="' + value + '" class="button is-small file_delay">\n' +
                     ' <span class="icon is-small">\n' +
                     ' <i class="fas fa-hourglass-start"></i>\n' +
                     ' </span>\n' +
