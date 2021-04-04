@@ -17,8 +17,6 @@ def message_received(client, server, message):
         message_template(msg, message, "origin", "octoprint", "js")
 
         message_template(msg, message, "origin", "js", "octoprint")
-    else:
-        print("No specified origin")
 
 # Pošle zprávu na Octoprint, že se klient odpojil
 def client_left(client, server):
