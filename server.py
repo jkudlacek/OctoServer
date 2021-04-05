@@ -20,14 +20,16 @@ def message_received(client, server, message):
 
 # Pošle zprávu na Octoprint, že se klient odpojil
 def client_left(client, server):
-    if client["source"]=="js":
-        message= {"left" : True}
-        message=json.dumps(message)
-        for x in server.clients:
-            # hledání správného příjemce
+    message= {"left" : True}
+    message=json.dumps(message)
+    for x in server.clients:
+        # hledání správného příjemce
+        if client["source"] == "js":
             if x["source"] == "octoprint":
                 server.send_message(x, message)
-
+        if client["source"] == "octoprint":
+            if x["source"] == "js":
+                server.send_message(x, message)
 
 # Funkce websocket server
 def server():

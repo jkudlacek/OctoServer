@@ -2,7 +2,8 @@ $(document).ready(function () {
     //Výchozí nastavení html elementů na stránce
     $("#loading").val(0);
     $(".button:not(#connect)").addClass("is-static");
-    $(".input").attr("disabled", true);
+    $(".input, #step").attr("disabled", true);
+
 
     //Po kliknutí na jakékoli tlačítko se zapne načítací pruh, který se vypne po přijetí další zprávy
     $(".button").click(function () {
@@ -81,8 +82,8 @@ $(document).ready(function () {
     });
 
     //zavře okno pro nastavení opožděného tisku
-    $(".modal-background, .modal-close").click(function () {
-        $("#plan_menu").removeClass("is-active");
+    $(".modal-background, .modal-close, .modal .button").click(function () {
+        $(".modal").removeClass("is-active");
     });
 
     $("#submit").click(function () {
@@ -167,14 +168,21 @@ $(document).ready(function () {
         }
     });
 
-    // Příkaz pro zastavení tisku
+    //Zobrazí okno pro potvrzení zrušení tisku
     $("#cancel").click(function () {
+        $("#cancel_menu").addClass("is-active");
+    });
+
+
+    // Příkaz pro zastavení tisku
+    $("#cancel_submit").click(function () {
         const obj = {
             origin: "js",
             cmd: "cancel"
         };
 
         socket.send(JSON.stringify(obj))
+        $("#cancel_menu").removeClass("is-active");
     });
 
     //Příkaz pro pozastavení/pokračování probíhajícího tisku
@@ -189,12 +197,18 @@ $(document).ready(function () {
 
     //Libovolný lineární pohyb se specifikovanými osami tiskárny
     $(".jog").click(function () {
+        const step = $("#step").val();
         const obj = {
-            origin: "js",
-            jog: $(this).val()
+            origin: "js"
         };
 
-        socket.send(JSON.stringify(obj))
+        obj["jog"] = {
+            axis: $(this).val(),
+            step: step
+        }
+
+        socket.send(JSON.stringify(obj));
+        console.log(obj);
     })
 
     //Příkaz pro pohyb do nulové pozice specifikovaných os

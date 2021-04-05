@@ -9,6 +9,8 @@ buf["tool"] = [];
 buf["bed"] = [];
 buf["tool_target"] = [];
 buf["bed_target"] = [];
+// Html šablona
+var old_html = $("body").html();
 
 // Konfigurační konstanta obsahující vlastnosti grafu
 const config = {
@@ -148,7 +150,7 @@ socket.onmessage = function (event) {
         last = state;
         //Jestli je nějaký soubor načtený
         if (obj.job.file.name != null) {
-            //Implementace informací o souboru na stránku
+            //Implementace informací o tisku na stránku
             let date = new Date(obj.job.file.date * 1000).toLocaleDateString("en-US");
             $("#uploaded").text(date);
             $("#file").text(obj.job.file.name);
@@ -170,6 +172,7 @@ socket.onmessage = function (event) {
             //Zobrazení teplot v uživatelském rozhraní
             $("#tool").text(Math.round(tool * 10) / 10 + "°C");
             $("#bed").text(Math.round(bed * 10) / 10 + "°C");
+
             //Vložení hodnot do bufferu
             buf["tool"].push({
                 x: rnow,
@@ -188,6 +191,15 @@ socket.onmessage = function (event) {
                 y: bed_target
             });
         }
+
+        //Vložení požadovaných hodnot do vstupního pole
+        //Zkontrolouje jestli je pole aktivní, pro zamezení přepisování hodnoty
+        if (!$("input[name=tool_target]").is(":focus")) {
+            $("input[name=tool_target]").val(tool_target);
+        }
+        if (!$("input[name=bed_target]").is(":focus")) {
+            $("input[name=bed_target]").val(bed_target);
+        }
     }
 
     //Zpráva obsahuje seznam souborů
@@ -205,7 +217,7 @@ socket.onmessage = function (event) {
                         file_list.push(v.path);
                     }
                 })
-            //    Pokud je položka soubor pro tiskárnu (.gcode) přidá se do pole
+                //    Pokud je položka soubor pro tiskárnu (.gcode) přidá se do pole
             } else if (value.type == "machinecode") {
                 file_list.push(value.path);
             }
@@ -229,6 +241,13 @@ socket.onmessage = function (event) {
             })
         })
 
+    }
+
+    if ("left" in obj) {
+        console.log("left")
+        if (obj.left) {
+            $("body").html(old_html);
+        }
     }
 };
 
@@ -286,16 +305,18 @@ function disableButtons(state) {
         window.myChart.update({duration: 0});
     } else {
         $("#connect").text("Connect");
+        $("#connect").removeClass("is-static");
+        $("#connection select").attr("disabled", false)
         config.options.scales.xAxes[0].realtime.pause = true;
         window.myChart.update({duration: 0});
         $("#connection > .card-content, #connection > .card-footer").removeClass("is-hidden");
         $(".button:not(#connect)").addClass("is-static");
-        $(".input").attr("disabled", true);
+        $(".input, #step").attr("disabled", true);
     }
     if (state == "Operational") {
-        $(".button:not(#print_toggle, #cancel)").removeClass("is-static");
-        $(".input").attr("disabled", false);
-        $("#print_toggle, #cancel").addClass("is-static");
+        $(".button:not(#print_toggle, #cancel, #cancel_menu .button)").removeClass("is-static");
+        $(".input, #step").attr("disabled", false);
+        $("#print_toggle, #cancel, #cancel_menu .button").addClass("is-static");
         $("#print").addClass("is-info");
         $("#print").removeClass("is-danger");
         $("#print").html('<span class="icon"><i class="fas fa-print"></i></span>\n' + '<span>Print</span>');
@@ -303,9 +324,9 @@ function disableButtons(state) {
         $("#print_toggle").removeClass("is-static");
         $("#print_toggle").html('<span class="icon"><i class="fas fa-pause"></i></span>\n' + '<span>Pause</span>');
 
-        $("#cancel").removeClass("is-static");
-        $(".input").attr("disabled", true);
-        $(".button:not(#print_toggle, #cancel)").addClass("is-static");
+        $("#cancel, #cancel_menu .button").removeClass("is-static");
+        $(".input, #step").attr("disabled", true);
+        $(".button:not(#print_toggle, #cancel, #cancel_menu .button)").addClass("is-static");
         $("#print").addClass("is-info");
         $("#print").removeClass("is-danger");
         $("#print").html('<span class="icon"><i class="fas fa-print"></i></span>\n' + '<span>Print</span>');
@@ -313,11 +334,11 @@ function disableButtons(state) {
         $("#print").removeClass("is-static");
         $("#print").removeClass("is-info");
         $("#print").addClass("is-danger");
-        $(".input").attr("disabled", true);
+        $(".input, #step").attr("disabled", true);
         $("#print").html('<span class="icon"><i class="fas fa-undo"></i></span>\n' + '<span>Restart</span>');
 
         $("#print_toggle").html('<span class="icon"><i class="fas fa-play"></i></span>\n' + '<span>Resume</span>');
-        $("#cancel").removeClass("is-static");
+        $("#cancel, #cancel_menu .button").removeClass("is-static");
         $("#print_toggle").removeClass("is-static");
     }
 }
