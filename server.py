@@ -18,7 +18,7 @@ def message_received(client, server, message):
 
         message_template(msg, message, "origin", "js", "octoprint")
 
-# Pošle zprávu na Octoprint, že se klient odpojil
+# Pošle zprávu klientovi, že se druhý klient odpojil
 def client_left(client, server):
     message= {"left" : True}
     message=json.dumps(message)

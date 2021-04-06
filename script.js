@@ -16,7 +16,9 @@ var old_html = $("body").html();
 const config = {
     type: 'line',
     data: {
+        //Jednotlivé datasety představující jiný soubor teplot
         datasets: [{
+            //Určí se jméno, barva a další vizuální vlastnosti
             label: 'Tool 0',
             borderColor: 'rgb(255, 99, 132)',
             fill: false,
@@ -45,22 +47,30 @@ const config = {
     options: {
         scales: {
             xAxes: [{
+                //Nastavení x souřadnice
                 type: 'realtime',
                 realtime: {
+                    //Jak dlouhý bude graf
                     duration: 1800000,
+                    //Jak často se do grafu vkládají data
                     refresh: 1000,
+                    //Zpoždění v reálném čase
                     delay: 2000,
+                    //Jestli má být vkládání dat pozastaveno
                     pause: false,
+                    //Určení funkce pro vklad nových dat
                     onRefresh: onRefresh
                 }
             }],
             yAxes: [{
+                //nastavení hraničních hodnot
                 ticks: {
                     suggestedMin: 0,
                     suggestedMax: 300
                 }
             }]
         },
+        //Nastavení zobrazení
         tooltips: {
             mode: 'nearest',
             intersect: false
@@ -147,6 +157,7 @@ socket.onmessage = function (event) {
         if (state == last) {
             $("#loading").attr("value", 0);
         }
+        //Uložení aktuálního stavu na později
         last = state;
         //Jestli je nějaký soubor načtený
         if (obj.job.file.name != null) {
@@ -213,6 +224,7 @@ socket.onmessage = function (event) {
             if (value.type == "folder") {
                 //Pokud je položka složka, zkontroluje se její obsah
                 $.each(value.children, function (k, v) {
+                    //Jestli je ve složce pro tiskárnu, přidá se do pole
                     if (v.type == "machinecode") {
                         file_list.push(v.path);
                     }
@@ -237,12 +249,14 @@ socket.onmessage = function (event) {
                     ' </span>\n' +
                     ' </button>' +
                     '</p></div>';
+                //vkládání jednotlivých položek do seznamu v aplikaci
                 $("#files").append('<p class="name">' + value + "</p>" + file_item + (key === (file_list.length - 1) ? "" : "<hr>"));
             })
         })
 
     }
 
+    //Octoprint se odpojil od websocket serveru, načte se původní html
     if ("left" in obj) {
         console.log("left")
         if (obj.left) {
